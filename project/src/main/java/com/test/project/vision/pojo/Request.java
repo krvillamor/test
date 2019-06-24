@@ -10,10 +10,7 @@ public class Request {
     private Image image;
     private List<Feature> features;
 
-    public Request(Image image, List<Feature> features) {
-        this.image = image;
-        this.features = features;
-    }
+
 
     public Image getImage() {
         return image;

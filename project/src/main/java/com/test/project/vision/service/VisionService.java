@@ -15,5 +15,5 @@ import java.util.Objects;
 
 public interface VisionService {
 
-     Sentiments getSentiment(String path) throws Exception;
+     Sentiments getVisionSentiment(String imageUrl) throws Exception;
 }

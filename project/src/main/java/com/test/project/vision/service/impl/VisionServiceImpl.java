@@ -19,32 +19,39 @@ public class VisionServiceImpl implements VisionService {
     private static final String API_URL = "https://content-vision.googleapis.com/v1/images:annotate";
 
     @Override
-    public Sentiments getSentiment(String path) throws Exception {
-        List<Request> requests = new ArrayList<>();
-        List<Feature> features = new ArrayList<>();
+    public Sentiments getVisionSentiment(String imageUrl) throws Exception {
+        List<Request> requests = new ArrayList<Request>();
+        List<Feature> features = new ArrayList<Feature>();
 
-        Image image = new Image(new Source(path));
-        Feature feature = new Feature(FeatureTypes.FACE_DETECTION, 1);
+        Image image = new Image(new Source(imageUrl));
+        Feature feature = new Feature();
+        feature.setType("FACE_DETECTION");
+        feature.setMaxResults(1);
         features.add(feature);
 
-        Request request = new Request(image, features);
+        Request request = new Request();
+        request.setFeatures(features);
+        request.setImage(image);
         requests.add(request);
 
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(API_URL + "?key=" + API_KEY);
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(API_URL)
+                .queryParam("key", API_KEY);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<AnnotateImageRequest> httpEntity = new HttpEntity<>(new AnnotateImageRequest(requests), headers);
 
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> responseEntity = restTemplate.exchange(builder.build().toUri(), HttpMethod.POST, httpEntity, String.class);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(uriComponentsBuilder.build().toUri(), HttpMethod.POST, httpEntity, String.class);
 
-        if (!Objects.requireNonNull(responseEntity.getBody()).isEmpty()) {
+        if (responseEntity.getBody() != null) {
+            Sentiments sentiments = new Sentiments();
             JsonNode node = new ObjectMapper().readTree(responseEntity.getBody()).get("responses");
             JsonNode joy = node.at("/0/faceAnnotations/0/joyLikelihood");
             JsonNode sorrow = node.at("/0/faceAnnotations/0/sorrowLikelihood");
-
-            return new Sentiments(joy.asText(), sorrow.asText());
+            sentiments.setJoyLikelihood(joy.asText());
+            sentiments.setSorrowLikelihood(sorrow.asText());
+            return sentiments;
         }
 
         return null;

@@ -8,10 +8,6 @@ public class Feature {
     private String type;
     private int maxResults;
 
-    public Feature(String type, int maxResults) {
-        this.type = type;
-        this.maxResults = maxResults;
-    }
 
     public String getType() {
         return type;

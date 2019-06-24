@@ -8,10 +8,7 @@ public class Sentiments {
     private String joyLikelihood;
     private String sorrowLikelihood;
 
-    public Sentiments(String joyLikelihood, String sorrowLikelihood) {
-        this.joyLikelihood = joyLikelihood;
-        this.sorrowLikelihood = sorrowLikelihood;
-    }
+
 
     public String getJoyLikelihood() {
         return joyLikelihood;
